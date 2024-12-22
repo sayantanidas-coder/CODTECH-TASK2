@@ -73,5 +73,6 @@ Front-End:
         ** Event listeners for user interactions.
         ** Local storage API for data persistence.
 
-**Conclusion: **
+**Conclusion:**
+
 This To-Do List application is an excellent demonstration of a lightweight, functional web tool that addresses daily task management needs. Its integration with local storage ensures persistence, while its modern design and responsive functionality make it accessible on various devices. It serves as a solid foundation for more advanced task management tools.
