@@ -1,98 +1,97 @@
-const input = document.querySelector("input");
-const addButton = document.querySelector(".add-button");
-const todosHtml = document.querySelector(".todos");
-const emptyImage = document.querySelector(".empty-image");
-let todosJson = JSON.parse(localStorage.getItem("todos")) || [];
-const deleteAllButton = document.querySelector(".delete-all");
-const filters = document.querySelectorAll(".filter");
-let filter = '';
+(() => {
+  const input = document.querySelector(".todo-input");
+  const addButton = document.querySelector(".add-button");
+  const todosHtml = document.querySelector(".todos");
+  const emptyImage = document.querySelector(".empty-image");
+  const deleteAllButton = document.querySelector(".delete-all");
+  const filters = document.querySelectorAll(".filter");
+  let todosJson = JSON.parse(localStorage.getItem("todos")) || [];
+  let filter = "";
 
-showTodos();
-
-function getTodoHtml(todo, index) {
-  if (filter && filter != todo.status) {
-    return '';
-  }
-  let checked = todo.status == "completed" ? "checked" : "";
-  return /* html */ `
-    <li class="todo">
-      <label for="${index}">
-        <input id="${index}" onclick="updateStatus(this)" type="checkbox" ${checked}>
-        <span class="${checked}">${todo.name}</span>
-      </label>
-      <button class="delete-btn" data-index="${index}" onclick="remove(this)"><i class="fa fa-times"></i></button>
-    </li>
-  `; 
-}
-
-function showTodos() {
-  if (todosJson.length == 0) {
-    todosHtml.innerHTML = '';
-    emptyImage.style.display = 'block';
-  } else {
-    todosHtml.innerHTML = todosJson.map(getTodoHtml).join('');
-    emptyImage.style.display = 'none';
-  }
-}
-
-function addTodo(todo)  {
-  input.value = "";
-  todosJson.unshift({ name: todo, status: "pending" });
-  localStorage.setItem("todos", JSON.stringify(todosJson));
-  showTodos();
-}
-
-input.addEventListener("keyup", e => {
-  let todo = input.value.trim();
-  if (!todo || e.key != "Enter") {
-    return;
-  }
-  addTodo(todo);
-});
-
-addButton.addEventListener("click", () => {
-  let todo = input.value.trim();
-  if (!todo) {
-    return;
-  }
-  addTodo(todo);
-});
-
-function updateStatus(todo) {
-  let todoName = todo.parentElement.lastElementChild;
-  if (todo.checked) {
-    todoName.classList.add("checked");
-    todosJson[todo.id].status = "completed";
-  } else {
-    todoName.classList.remove("checked");
-    todosJson[todo.id].status = "pending";
-  }
-  localStorage.setItem("todos", JSON.stringify(todosJson));
-}
-
-function remove(todo) {
-  const index = todo.dataset.index;
-  todosJson.splice(index, 1);
-  showTodos();
-  localStorage.setItem("todos", JSON.stringify(todosJson));
-}
-
-filters.forEach(function (el) {
-  el.addEventListener("click", (e) => {
-    if (el.classList.contains('active')) {
-      el.classList.remove('active');
-      filter = '';
-    } else {
-      filters.forEach(tag => tag.classList.remove('active'));
-      el.classList.add('active');
-      filter = e.target.dataset.filter;
+  // Initialize
+  const showTodos = () => {
+    if (!todosJson.length) {
+      todosHtml.innerHTML = "";
+      emptyImage.style.display = "block";
+      return;
     }
-    showTodos();
-  });
-});
+    todosHtml.innerHTML = todosJson
+      .filter((todo) => !filter || todo.status === filter)
+      .map((todo, index) => `
+        <li class="todo">
+          <label>
+            <input type="checkbox" ${todo.status === "completed" ? "checked" : ""} data-index="${index}">
+            <span class="${todo.status === "completed" ? "checked" : ""}">${todo.name}</span>
+          </label>
+          <button class="delete-btn" data-index="${index}">
+            <i class="fa fa-times"></i>
+          </button>
+        </li>
+      `).join("");
+    emptyImage.style.display = "none";
+    addEventListeners();
+  };
 
-deleteAllButton.addEventListener("click", () => {
-  todosJson = [];
-  localStorage.setItem("todos", JSON.stringify(todosJson));
+  const addEventListeners = () => {
+    todosHtml.querySelectorAll("input[type='checkbox']").forEach((input) =>
+      input.addEventListener("change", updateStatus)
+    );
+    todosHtml.querySelectorAll(".delete-btn").forEach((btn) =>
+      btn.addEventListener("click", removeTodo)
+    );
+  };
+
+  const updateStatus = (e) => {
+    const index = e.target.dataset.index;
+    todosJson[index].status = e.target.checked ? "completed" : "pending";
+    localStorage.setItem("todos", JSON.stringify(todosJson));
+    showTodos();
+  };
+
+  const addTodo = () => {
+    const todoName = input.value.trim();
+    if (!todoName) {
+      alert("Please enter a task!");
+      return;
+    }
+    todosJson.push({ name: todoName, status: "pending" });
+    localStorage.setItem("todos", JSON.stringify(todosJson));
+    input.value = "";
+    showTodos();
+  };
+
+  const removeTodo = (e) => {
+    const index = e.target.closest(".delete-btn").dataset.index;
+    todosJson.splice(index, 1);
+    localStorage.setItem("todos", JSON.stringify(todosJson));
+    showTodos();
+  };
+
+  const clearTodos = () => {
+    if (!todosJson.length) {
+      alert("No tasks to delete!");
+      return;
+    }
+    if (confirm("Are you sure you want to delete all tasks?")) {
+      todosJson = [];
+      localStorage.setItem("todos", JSON.stringify(todosJson));
+      showTodos();
+    }
+  };
+
+  addButton.addEventListener("click", addTodo);
+  input.addEventListener("keyup", (e) => {
+    if (e.key === "Enter") addTodo();
+  });
+  deleteAllButton.addEventListener("click", clearTodos);
+  filters.forEach((filterBtn) =>
+    filterBtn.addEventListener("click", () => {
+      filters.forEach((btn) => btn.classList.remove("active"));
+      filter = filter === filterBtn.dataset.filter ? "" : filterBtn.dataset.filter;
+      filterBtn.classList.toggle("active");
+      showTodos();
+    })
+  );
+
   showTodos();
-});
+})();
