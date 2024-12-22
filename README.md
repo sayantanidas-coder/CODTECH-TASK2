@@ -6,15 +6,17 @@
 * Mentor: NEELA SANTHOSH
 
 
-**Overview of the Project**
+**Overview of the Project:**
 
 **Project: TO-DO LIST APPLICATION WITH LOCAL STORAGE**
 
 **Objective**
 The primary purpose of the To-Do List application is to create a user-friendly tool to manage daily tasks effectively. It allows users to add, track, and organize tasks, with the added benefit of persistence through browser local storage.
+
 ![Screenshot (315)](https://github.com/user-attachments/assets/5d4598ea-924a-4af3-8f68-bb896f36ba74)
 
 Specific Objectives: 
+
 ***Task Management:*** Enable users to add, mark as completed, and delete tasks.
 ***Filtering Options:*** Provide a way to filter tasks by their status (e.g., completed, pending).
 ***Data Persistence:*** Use local storage to ensure tasks persist even after the browser is closed or refreshed.
@@ -71,5 +73,5 @@ Front-End:
         ** Event listeners for user interactions.
         ** Local storage API for data persistence.
 
-**Conclusion**
+**Conclusion: **
 This To-Do List application is an excellent demonstration of a lightweight, functional web tool that addresses daily task management needs. Its integration with local storage ensures persistence, while its modern design and responsive functionality make it accessible on various devices. It serves as a solid foundation for more advanced task management tools.
